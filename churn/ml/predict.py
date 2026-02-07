@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import pickle
 
 with open('model/churn_model.pkl', 'rb') as f:
@@ -50,7 +49,7 @@ def predict_from_csv(csv_path, output_path=None):
     return result
 
 
-def pred_for_one_clienn():
+def pred_for_one_client():
     new_client = {
         'is_tv_subscriber': 1,              # Є підписка на ТБ
         'is_movie_package_subscriber': 0,   # Немає кінопакету
@@ -105,19 +104,5 @@ def pred_for_multiple_clients():
     for risk_level, count in risk_counts.items():
         print(f"  {risk_level}: {count} клієнтів")
 
-def pred_for_csv():
-    print("\n" + "=" * 70)
-    print("ПРИКЛАД 3: ПРОГНОЗ З ТЕСТОВОГО НАБОРУ")
-    print("=" * 70)
-    test_data = pd.read_csv('train_data/X_test.csv')
-    sample_clients = test_data.head(10)
-    print(f"\nРобимо прогноз для {len(sample_clients)} клієнтів з тестового набору...")
-    sample_predictions = predict_churn(sample_clients)
-    sample_results = pd.concat([sample_clients, sample_predictions], axis=1)
-    print("\n" + "-" * 70)
-    print("РЕЗУЛЬТАТИ (перші 10 клієнтів):")
-    print("-" * 70)
-    print(sample_results[['subscription_age', 'bill_avg', 'churn_probability', 
-                        'churn_prediction', 'risk_level']].to_string())
-    sample_results.to_csv('predict_result/sample_predictions.csv', index=False)
-    print("\n✓ Результати збережені: sample_predictions.csv")
+pred_for_one_client()
+pred_for_multiple_clients()
