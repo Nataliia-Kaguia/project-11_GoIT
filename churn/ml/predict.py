@@ -1,14 +1,22 @@
-import pandas as pd
+import os
 import pickle
+import pandas as pd
 
-with open('model/churn_model.pkl', 'rb') as f:
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_PATH = os.path.join(BASE_DIR, "model", "churn_model.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "training_data", "scaler.pkl")
+FEATURES_PATH = os.path.join(BASE_DIR, "training_data", "feature_names.pkl")
+
+with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
 
-with open('training_data/scaler.pkl', 'rb') as f:
+with open(SCALER_PATH, "rb") as f:
     scaler = pickle.load(f)
 
-with open('training_data/feature_names.pkl', 'rb') as f:
+with open(FEATURES_PATH, "rb") as f:
     feature_names = pickle.load(f)
+
 
 def predict_churn(client_data):
     if isinstance(client_data, dict):
@@ -104,5 +112,6 @@ def pred_for_multiple_clients():
     for risk_level, count in risk_counts.items():
         print(f"  {risk_level}: {count} клієнтів")
 
-pred_for_one_client()
-pred_for_multiple_clients()
+if __name__ == "__main__":
+    pred_for_one_client()
+    pred_for_multiple_clients()

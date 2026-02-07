@@ -4,7 +4,17 @@
     <title>Model Metrics</title>
 </head>
 <body>
-    <h1>{{ message }}</h1>
+    <h1>Model Metrics</h1>
+
+    <p>Accuracy: {{ accuracy }}</p>
+    <p>Precision: {{ precision }}</p>
+    <p>Recall: {{ recall }}</p>
+    <p>F1-score: {{ f1_score }}</p>
+
+    <h2>Confusion Matrix</h2>
+    <img src="data:image/png;base64,{{ cm_base64 }}" alt="Confusion Matrix" />
+
+    <br><br>
     <a href="{% url 'home' %}">Back to Home</a>
 </body>
 </html>

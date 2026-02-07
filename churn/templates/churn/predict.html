@@ -4,7 +4,22 @@
     <title>Make Prediction</title>
 </head>
 <body>
-    <h1>{{ message }}</h1>
-    <a href="{% url 'home' %}">Back to Home</a>
+
+<h1>Churn Prediction</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Predict</button>
+</form>
+
+{% if message %}
+    <hr>
+    <h2>{{ message }}</h2>
+    <p>Probability: {{ probability }}</p>
+{% endif %}
+
+<a href="{% url 'home' %}">Back to Home</a>
+
 </body>
 </html>
