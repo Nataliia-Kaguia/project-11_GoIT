@@ -21,6 +21,22 @@
 
 Оптимізатор: Adam
 
+Більш детальная архітектура: {
+
+    model = MLPClassifier(
+        hidden_layer_sizes=(64, 32, 16),
+        activation='relu',
+        solver='adam',
+        alpha=0.0001,
+        learning_rate_init=0.001,
+        max_iter=300,
+        early_stopping=True,
+        validation_fraction=0.1,
+        n_iter_no_change=10,
+        random_state=42
+    )
+}
+
 
 
 
