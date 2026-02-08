@@ -138,34 +138,64 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# === Python ===
+
 __pycache__/
 *.py[cod]
 *$py.class
 
-# === Virtual environments ===
-.venv/
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it
+*.manifest
+*.spec  
+
+# Virtual environment
 venv/
 env/
 ENV/
 
-# === Django ===
-db.sqlite3
+# Django stuff:
 *.log
-local_settings.py
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+*.sqlite3
+staticfiles/
 
-# === ML / Data ===
-*.pkl
-*.joblib
-data/
-*.csv
-*.parquet
+# ML / Data files
+*.h5        # Keras models
+*.hdf5      # HDF5 models
+*.ckpt      # TensorFlow checkpoints
+*.pt        # PyTorch models
+*.pth       # PyTorch models
+*.joblib    # sklearn / joblib models
+*.pkl       # pickled objects
+*.npz       # NumPy archives
+*.npy       # NumPy arrays
 
-# === Jupyter ===
+# Jupyter Notebooks checkpoints
 .ipynb_checkpoints/
 
-# === OS / Editor ===
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/

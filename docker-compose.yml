@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: project11_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app   # дозволяє редагувати код на хості і бачити зміни в контейнері
+    ports:
+      - "8002:8000"  # локальний порт 8001 → контейнер 8000
+    environment:
+      - PYTHONUNBUFFERED=1
