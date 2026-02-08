@@ -22,32 +22,24 @@ from sklearn.metrics import (
 from .forms import ChurnPredictionForm
 from churn.ml.predict import predict_churn
 
-
+# --- Paths ---
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml")
 MODEL_PATH = os.path.join(BASE_DIR, "model", "churn_model.pkl")
+MODEL_INFO_PATH = os.path.join(BASE_DIR, "model", "model_info.pkl")
 X_TEST_PATH = os.path.join(BASE_DIR, "training_data", "X_test.csv")
 Y_TEST_PATH = os.path.join(BASE_DIR, "training_data", "Y_test.csv")
 SCALER_PATH = os.path.join(BASE_DIR, "training_data", "scaler.pkl")
 
-# Шлях до model_info.pkl
-MODEL_INFO_PATH = os.path.join(BASE_DIR, "model", "model_info.pkl")
-
-# Завантажуємо model_info
-with open(MODEL_INFO_PATH, "rb") as f:
-    model_info = pickle.load(f)
-
-numerical_cols = [
-    "subscription_age",
-    "bill_avg",
-    "reamining_contract",
-    "service_failure_count",
-    "download_avg",
-    "upload_avg",
-]
-
-model_info = joblib.load(MODEL_INFO_PATH)
+# --- Load model & scaler & model_info ---
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
+model_info = joblib.load(MODEL_INFO_PATH)  # dict with best_model and metrics
+
+# --- Load test data ---
+X_test = pd.read_csv(X_TEST_PATH)
+y_test = pd.read_csv(Y_TEST_PATH).values.ravel()  # 1D array
+
+# --------------------- Views ---------------------
 
 
 def home_view(request):
@@ -65,23 +57,27 @@ def feature_names_view(request):
 
 
 def model_metrics_view(request):
-    # Вибираємо найкращу модель
-    best_model = model_info["best_model"]
-    best_metrics = model_info["models"][best_model]
+    # --- Predictions ---
+    y_pred = model.predict(X_test)
 
-    # Отримуємо confusion matrix
-    cm = best_metrics["confusion_matrix"]
+    # --- Confusion matrix & metrics ---
+    cm = confusion_matrix(y_test, y_pred)
     tn, fp, fn, tp = cm.ravel()
 
-    # Малюємо heatmap з TN, FP, FN, TP
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, zero_division=0)
+    recall = recall_score(y_test, y_pred, zero_division=0)
+    f1 = f1_score(y_test, y_pred, zero_division=0)
+
+    # --- Plot confusion matrix ---
     fig, ax = plt.subplots(figsize=(5, 4))
-    labels = np.array([[f"TN\n{tn}", f"FP\n{fp}"], [f"FN\n{fn}", f"TP\n{tp}"]])
+    labels = [[f"TN\n{tn}", f"FP\n{fp}"], [f"FN\n{fn}", f"TP\n{tp}"]]
     sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", ax=ax)
     ax.set_xlabel("Predicted")
     ax.set_ylabel("Actual")
-    ax.set_title(f"Confusion Matrix ({best_model})")
+    ax.set_title(f"Confusion Matrix ({model_info['best_model']})")
 
-    # Конвертуємо графік у base64 для шаблону
+    # --- Convert plot to base64 ---
     buf = io.BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight")
     buf.seek(0)
@@ -89,17 +85,18 @@ def model_metrics_view(request):
     buf.close()
     plt.close(fig)
 
-    # Передаємо у шаблон
+    # --- Send context to template ---
     context = {
-        "accuracy": None,  # можна додати, якщо обчислювати окремо
-        "precision": None,
-        "recall": None,
-        "f1_score": best_metrics["f1_score"],
+        "accuracy": f"{accuracy:.2%}",
+        "precision": f"{precision:.2%}",
+        "recall": f"{recall:.2%}",
+        "f1_score": f"{f1:.2%}",
         "cm_base64": cm_base64,
-        "best_model": best_model,
+        "best_model": model_info["best_model"],
     }
 
     return render(request, "churn/model_metrics.html", context)
+
 
 def predict_view(request):
     form = ChurnPredictionForm()
@@ -111,19 +108,17 @@ def predict_view(request):
         if form.is_valid():
             data = form.cleaned_data
 
-            # Викликаємо predict_churn → отримаємо DataFrame
+            # --- Get prediction ---
             result_df = predict_churn(data)
-
-            # Беремо перший рядок
             probability = result_df["churn_probability"].values[0]
             prediction = result_df["churn_prediction"].values[0]
             risk_level = result_df["risk_level"].values[0]
 
-            # Формуємо повідомлення для шаблону
+            # --- Form message ---
             if prediction == 1:
-                message = f"⚠️ Client WILL churn (Рівень ризику: {risk_level})"
+                message = f"⚠️ Client WILL churn (Risk: {risk_level})"
             else:
-                message = f"✅ Client will NOT churn (Рівень ризику: {risk_level})"
+                message = f"✅ Client will NOT churn (Risk: {risk_level})"
 
     return render(
         request,
