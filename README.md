@@ -24,6 +24,8 @@
 Класична ML-модель (sklearn), навчена на історичних даних клієнтів
 
 ### Артефакти ML
+
+```
 churn/ml/
 ├── model/
 │   ├── churn_model.pkl
@@ -33,6 +35,8 @@ churn/ml/
 │   ├── feature_names.pkl
 │   ├── X_test.csv
 │   └── Y_test.csv
+```
+
 
 churn_model.pkl — навчена модель
 
