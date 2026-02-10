@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Model Metrics</title>
-</head>
-<body>
-<h1>Best Model: {{ best_model }}</h1>
-<p>F1-score: {{ f1_score }}</p>
+{% extends "churn/base.html" %}
+
+{% block title %}Model Metrics{% endblock %}
+
+{% block content %}
+<h2>Best Model: {{ best_model }}</h2>
 
 <h3>Основні метрики:</h3>
 <ul>
@@ -13,12 +11,13 @@
     <li>Precision: {{ precision }}</li>
     <li>Recall: {{ recall }}</li>
     <li>F1-score: {{ f1_score }}</li>
+    <li>ROC-AUC: {{ roc_auc }}</li>
 </ul>
 
 <h3>Confusion Matrix:</h3>
 <img src="data:image/png;base64,{{ cm_base64 }}" alt="Confusion Matrix">
 
-<a href="{% url 'home' %}">Back to Home</a>
-
-</body>
-</html>
+<h3>ROC Curve:</h3>
+<p>Чим ближче крива до верхнього лівого кута, тим краща модель.</p>
+<img src="data:image/png;base64,{{ roc_base64 }}" alt="ROC Curve">
+{% endblock %}

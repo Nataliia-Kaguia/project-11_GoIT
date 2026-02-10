@@ -1,23 +1,89 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home - Churn Project</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        nav { margin-bottom: 20px; background-color: #f8f8f8; padding: 10px; border-radius: 8px; }
-        nav a { margin-right: 20px; text-decoration: none; color: #007BFF; font-weight: bold; }
-        nav a:hover { text-decoration: underline; }
-        h1 { color: #333; }
-    </style>
-</head>
-<body>
-    <h1>Churn Project - Home</h1>
-    <nav>
-        <a href="{% url 'feature_names' %}">Feature Names</a>
-        <a href="{% url 'model_metrics' %}">Model Metrics</a>
-        <a href="{% url 'predict' %}">Make Prediction</a>
-    </nav>
-    <p>Вибери вкладку вище, щоб перейти до потрібного розділу.</p>
-</body>
-</html>
+{% extends "churn/base.html" %}
 
+{% block title %}Home - Churn Project{% endblock %}
+
+{% block content %}
+<h2>Welcome to the Churn Project</h2>
+<p>Вибери вкладку у шапці, щоб перейти до потрібного розділу.</p>
+
+<hr>
+
+<h3>Проєкт виконано командою: Customer Retention Lab</h3>
+<p><strong>Роль:</strong> Data Scientist<br>
+<strong>Основна задача:</strong> прогнозування ймовірності відтоку клієнтів телекомунікаційної компанії</p>
+
+<h2>📊 Churn Prediction Web Application for Telecom Customer</h2>
+<p>Цей проєкт — веб-застосунок для прогнозування відтоку клієнтів (Customer Churn) для телекомунікаційної компанії.</p>
+
+<h3>Проєкт поєднує:</h3>
+<ul>
+    <li>Machine Learning (навчена модель прогнозування)</li>
+    <li>Backend на Django</li>
+    <li>Веб-інтерфейс для введення даних клієнта</li>
+    <li>Візуалізацію метрик моделі</li>
+    <li>Користувач може вручну ввести дані клієнта та отримати:
+        <ul>
+            <li>ймовірність відтоку</li>
+            <li>прогноз (піде / залишиться)</li>
+            <li>рівень ризику</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>Machine Learning частина</h3>
+<p>Класична ML-модель (sklearn), навчена на історичних даних клієнтів</p>
+
+<h4>Артефакти ML</h4>
+<pre>
+churn/ml/
+├── model/
+│   ├── churn_model.pkl
+│   └── model_info.pkl
+├── training_data/
+│   ├── scaler.pkl
+│   ├── feature_names.pkl
+│   ├── X_test.csv
+│   └── Y_test.csv
+</pre>
+<p>
+<code>churn_model.pkl</code> — навчена модель<br>
+<code>scaler.pkl</code> — StandardScaler для числових ознак<br>
+<code>feature_names.pkl</code> — порядок фіч<br>
+<code>model_info.pkl</code> — метрики та інформація про модель
+</p>
+<p>⚠️ Великі файли збережені з використанням Git LFS</p>
+
+<h3>Django Web Application</h3>
+<p><strong>Основні можливості:</strong></p>
+<ul>
+    <li>🏠 Головна сторінка</li>
+    <li>📋 Перегляд списку ознак (features)</li>
+    <li>📈 Візуалізація Confusion Matrix</li>
+    <li>✍️ Форма прогнозу churn для одного клієнта</li>
+</ul>
+
+<h4>Основні URL</h4>
+<ul>
+    <li>/ — Home</li>
+    <li>/features/ — Список ознак</li>
+    <li>/metrics/ — Метрики моделі</li>
+    <li>/predict/ — Прогноз churn</li>
+</ul>
+
+<h4>Форма прогнозу виводить:</h4>
+<ul>
+    <li>ймовірність відтоку</li>
+    <li>прогноз</li>
+    <li>рівень ризику (Low / Medium / High)</li>
+</ul>
+
+<h3>Технології</h3>
+<ul>
+    <li>Python 3.11</li>
+    <li>Django</li>
+    <li>pandas</li>
+    <li>numpy</li>
+    <li>scikit-learn</li>
+    <li>matplotlib / seaborn</li>
+</ul>
+{% endblock %}

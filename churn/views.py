@@ -17,6 +17,8 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     confusion_matrix,
+    roc_auc_score,
+    roc_curve,
 )
 
 from .forms import ChurnPredictionForm
@@ -47,54 +49,89 @@ def home_view(request):
 
 
 def feature_names_view(request):
-    file_path = "churn/ml/training_data/feature_names.pkl"
+    # file_path = "churn/ml/training_data/feature_names.pkl"
 
-    with open(file_path, "rb") as f:
-        feature_names = pickle.load(f)
+    # with open(file_path, "rb") as f:
+    #     feature_names = pickle.load(f)
 
-    context = {"feature_names": feature_names}
-    return render(request, "churn/feature_names.html", context)
+    # context = {"feature_names": feature_names}
+
+    feature_names = {
+        "is_tv_subscriber": "Є підписка на ТБ (Так/Ні)",
+        "is_movie_package_subscriber": "Є підписка на пакет фільмів (Так/Ні)",
+        "subscription_age": "Вік підписки користувача у місяцях",
+        "bill_avg": "Середній рахунок користувача за період",
+        "reamining_contract": "Залишок місяців до закінчення контракту",
+        "service_failure_count": "Кількість збоїв у наданні послуг",
+        "download_avg": "Средній обсяг завантажених даних",
+        "upload_avg": "Середній обсяг відвантажених даних",
+        "download_over_limit": "Кількість разів, коли користувач перевищив ліміт завантаження",
+    }
+    return render(request, "churn/feature_names.html", {"feature_names": feature_names})
+    # return render(request, "churn/feature_names.html", context)
 
 
 def model_metrics_view(request):
     # --- Predictions ---
     y_pred = model.predict(X_test)
 
-    # --- Confusion matrix & metrics ---
-    cm = confusion_matrix(y_test, y_pred)
-    tn, fp, fn, tp = cm.ravel()
+    # --- Probabilities for ROC ---
+    if hasattr(model, "predict_proba"):
+        y_prob = model.predict_proba(X_test)[:, 1]
+    else:
+        # для моделей без predict_proba (наприклад, SVM без probability=True)
+        y_prob = model.decision_function(X_test)
+        y_prob = (y_prob - y_prob.min()) / (y_prob.max() - y_prob.min())
 
+    # --- Metrics ---
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred, zero_division=0)
     recall = recall_score(y_test, y_pred, zero_division=0)
     f1 = f1_score(y_test, y_pred, zero_division=0)
+    roc_auc = roc_auc_score(y_test, y_prob)
 
-    # --- Plot confusion matrix ---
+    # --- Confusion Matrix Plot ---
+    cm = confusion_matrix(y_test, y_pred)
+    tn, fp, fn, tp = cm.ravel()
     fig, ax = plt.subplots(figsize=(5, 4))
     labels = [[f"TN\n{tn}", f"FP\n{fp}"], [f"FN\n{fn}", f"TP\n{tp}"]]
-    sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", ax=ax)
+    sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False, ax=ax)
     ax.set_xlabel("Predicted")
     ax.set_ylabel("Actual")
-    ax.set_title(f"Confusion Matrix ({model_info['best_model']})")
+    ax.set_title("Confusion Matrix")
 
-    # --- Convert plot to base64 ---
     buf = io.BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight")
     buf.seek(0)
     cm_base64 = base64.b64encode(buf.getvalue()).decode("utf-8")
-    buf.close()
     plt.close(fig)
 
-    # --- Send context to template ---
+    # --- ROC Curve Plot ---
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    fig2, ax2 = plt.subplots(figsize=(5, 4))
+    ax2.plot(fpr, tpr, label=f"AUC = {roc_auc:.2%}")
+    ax2.plot([0, 1], [0, 1], "k--")
+    ax2.set_xlabel("False Positive Rate")
+    ax2.set_ylabel("True Positive Rate")
+    ax2.set_title("ROC Curve")
+    ax2.legend()
+
+    buf2 = io.BytesIO()
+    fig2.savefig(buf2, format="png", bbox_inches="tight")
+    buf2.seek(0)
+    roc_base64 = base64.b64encode(buf2.getvalue()).decode("utf-8")
+    plt.close(fig2)
+
     context = {
         "accuracy": f"{accuracy:.2%}",
         "precision": f"{precision:.2%}",
         "recall": f"{recall:.2%}",
         "f1_score": f"{f1:.2%}",
+        "roc_auc": f"{roc_auc:.2%}",
         "cm_base64": cm_base64,
-        "best_model": model_info["best_model"],
+        "roc_base64": roc_base64,
+        "best_model": model_info.get("best_model", "N/A"),
     }
-
     return render(request, "churn/model_metrics.html", context)
 
 
@@ -110,9 +147,9 @@ def predict_view(request):
 
             # --- Get prediction ---
             result_df = predict_churn(data)
-            probability = result_df["churn_probability"].values[0]
-            prediction = result_df["churn_prediction"].values[0]
-            risk_level = result_df["risk_level"].values[0]
+            probability = result_df["churn_probability"]
+            prediction = result_df["churn_prediction"]
+            risk_level = result_df["risk_level"]
 
             # --- Form message ---
             if prediction == 1:

@@ -113,7 +113,10 @@ source .venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
-
+### або однією командою
+```
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+```
 4️⃣ Запуск сервера
 ```
 python manage.py runserver 8000
