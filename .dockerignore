@@ -1,0 +1,16 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+internet_service_churn.csv
+churn/ml/train.py
+churn/ml/training_data
+churn/ml/**/X_*.csv
+churn/ml/**/Y_*.csv
+churn/ml/**/roc_curve.png
+
+db.sqlite3
+.git
+.gitignore
