@@ -1,42 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Churn Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-        table {
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        td {
-            padding: 8px 12px;
-        }
-        input[type="number"] {
-            width: 100px;
-        }
-        select {
-            width: 100px;
-        }
-        button {
-            padding: 8px 16px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            background-color: #f7f7f7;
-            width: fit-content;
-        }
-    </style>
-</head>
-<body>
+{% extends "churn/base.html" %}
 
-<h1>Churn Prediction</h1>
+{% block title %}Churn Prediction{% endblock %}
+
+{% block content %}
+<h2>Churn Prediction</h2>
 
 <form method="post">
     {% csrf_token %}
@@ -54,12 +21,8 @@
 
 {% if message %}
 <div class="result">
-    <h2>{{ message }}</h2>
+    <h3>{{ message }}</h3>
     <p>Probability: {{ probability|floatformat:2 }}</p>
 </div>
 {% endif %}
-
-<a href="{% url 'home' %}">Back to Home</a>
-
-</body>
-</html>
+{% endblock %}

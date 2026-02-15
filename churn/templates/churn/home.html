@@ -1,23 +1,145 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home - Churn Project</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        nav { margin-bottom: 20px; background-color: #f8f8f8; padding: 10px; border-radius: 8px; }
-        nav a { margin-right: 20px; text-decoration: none; color: #007BFF; font-weight: bold; }
-        nav a:hover { text-decoration: underline; }
-        h1 { color: #333; }
-    </style>
-</head>
-<body>
-    <h1>Churn Project - Home</h1>
-    <nav>
-        <a href="{% url 'feature_names' %}">Feature Names</a>
-        <a href="{% url 'model_metrics' %}">Model Metrics</a>
-        <a href="{% url 'predict' %}">Make Prediction</a>
-    </nav>
-    <p>Вибери вкладку вище, щоб перейти до потрібного розділу.</p>
-</body>
-</html>
+{% extends "churn/base.html" %}
 
+{% block title %}
+Churn Prediction | Telecom
+{% endblock %}
+
+{% block content %}
+
+<section>
+  <p><strong>Проєкт виконано командою:</strong> Customer Retention Lab</p>
+  <p><strong>Роль:</strong> Data Scientist</p>
+  <p>
+    <strong>Основна задача:</strong>
+    прогнозування ймовірності відтоку клієнтів телекомунікаційної компанії
+  </p>
+</section>
+
+<hr>
+
+<section>
+  <h2>📊 Churn Prediction Web Application for Telecom Customer</h2>
+
+  <p>
+    Цей проєкт — веб-застосунок для прогнозування відтоку клієнтів
+    (<em>Customer Churn</em>) для телекомунікаційної компанії.
+  </p>
+
+  <h3>Проєкт поєднує:</h3>
+  <ul>
+    <li>Machine Learning (навчена модель прогнозування)</li>
+    <li>Backend на Django</li>
+    <li>Веб-інтерфейс для введення даних клієнта</li>
+    <li>Візуалізацію метрик моделі</li>
+  </ul>
+
+  <p>Користувач може вручну ввести дані клієнта та отримати:</p>
+  <ul>
+    <li>ймовірність відтоку</li>
+    <li>прогноз (піде / залишиться)</li>
+    <li>рівень ризику</li>
+  </ul>
+</section>
+
+<hr>
+
+<section>
+  <h2>Machine Learning частина</h2>
+
+  <p>
+    Класична ML-модель (<em>scikit-learn</em>), навчена на історичних даних клієнтів.
+  </p>
+
+  <h3>Артефакти ML</h3>
+
+  <pre><code>
+churn/ml/
+├── model/
+│   ├── churn_model.pkl
+│   └── model_info.pkl
+├── training_data/
+│   ├── scaler.pkl
+│   ├── feature_names.pkl
+│   ├── X_test.csv
+│   └── Y_test.csv
+  </code></pre>
+
+  <ul>
+    <li><strong>churn_model.pkl</strong> — навчена модель</li>
+    <li><strong>scaler.pkl</strong> — StandardScaler</li>
+    <li><strong>feature_names.pkl</strong> — порядок фіч</li>
+    <li><strong>model_info.pkl</strong> — метрики моделі</li>
+  </ul>
+
+  <p>⚠️ Великі файли збережені з використанням Git LFS</p>
+</section>
+
+<hr>
+
+<section>
+  <h2>Вибір моделі</h2>
+
+  <p>
+    Було протестовано декілька класичних ML-алгоритмів
+    (<em>Logistic Regression, Decision Tree, KNN, SVM</em> тощо).
+  </p>
+
+  <p>
+    За результатами порівняння метрик
+    (<strong>ROC-AUC, Precision, Recall, F1-score</strong>)
+    найкращі результати показала модель <strong>Random Forest</strong>.
+  </p>
+
+  <h3>Фінальна модель:</h3>
+
+  <pre><code>
+RandomForestClassifier(
+    n_estimators=200,
+    random_state=42,
+    class_weight="balanced"
+)
+  </code></pre>
+
+  <p>
+    Саме ця модель використовується у веб-застосунку для прогнозування
+    ймовірності відтоку клієнтів.
+  </p>
+</section>
+
+<hr>
+
+<section>
+  <h2>Django Web Application</h2>
+
+  <h3>Основні можливості</h3>
+  <ul>
+    <li>🏠 Головна сторінка</li>
+    <li>📋 Перегляд списку ознак</li>
+    <li>📈 Confusion Matrix</li>
+    <li>✍️ Прогноз churn для одного клієнта</li>
+  </ul>
+
+  <h3>Основні URL</h3>
+  <ul>
+    <li><code>/</code> — Home</li>
+    <li><code>/features/</code> — Features</li>
+    <li><code>/metrics/</code> — Metrics</li>
+    <li><code>/predict/</code> — Predict</li>
+  </ul>
+</section>
+
+<hr>
+
+<section>
+  <h2>Технології</h2>
+  <ul>
+    <li>Python 3.11</li>
+    <li>Django</li>
+    <li>pandas, numpy</li>
+    <li>scikit-learn</li>
+    <li>matplotlib / seaborn</li>
+    <li>Git & Git LFS</li>
+  </ul>
+</section>
+
+{% endblock %}

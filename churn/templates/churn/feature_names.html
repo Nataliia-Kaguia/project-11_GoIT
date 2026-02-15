@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Feature Names</title>
-</head>
-<body>
-    <h1>Назви ознак моделі</h1>
-    <ul>
-        {% for name in feature_names %}
-            <li>{{ name }}</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "churn/base.html" %}
+
+{% block title %}Feature Names{% endblock %}
+
+{% block content %}
+<h2>Назви ознак моделі</h2>
+
+<ul>
+    {% for name, description in feature_names.items %}
+        <li><strong>{{ name }}</strong>: {{ description }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
